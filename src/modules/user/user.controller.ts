@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import { userService } from "./user.service";
-import userValidationSchema from "./user.validation";
+import { userValidationSchema } from "./user.validation";
+// import { TOrders } from "./user.interface";
 
 
 const createUser = async (req: Request, res: Response) => {
 
     try {
         const userData = req.body;
-        const { error,value } = userValidationSchema.validate(userData);
+        const { error, value } = userValidationSchema.validate(userData);
         if (error) {
             return res.status(500).json({
                 success: false,
@@ -16,21 +17,21 @@ const createUser = async (req: Request, res: Response) => {
                 error: error,
             });
         }
-        try{
-        const result = await userService.createUserInToDb(value);
-      
-        res.status(200).json({
-            success: true,
-            message: "User created successfully",
-            data: result
-        })
-    }catch(err:any){
-        res.status(500).json({
-            success: false,
-            message: err.message || "something went wrong",
-            error: err
-        })
-    }
+        try {
+            const result = await userService.createUserInToDb(value);
+
+            res.status(200).json({
+                success: true,
+                message: "User created successfully",
+                data: result
+            })
+        } catch (err: any) {
+            res.status(500).json({
+                success: false,
+                message: err.message || "something went wrong",
+                error: err
+            })
+        }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
@@ -98,15 +99,43 @@ const getSingleUser = async (req: Request, res: Response) => {
 }
 
 
+//  Retrieve all orders for a specific user
+const getOrdersBySpecificUser = async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.params;
+        try {
+            const result = await userService.getOrdersBySpecificUserFromDb(userId);
+            res.status(200).json({
+                success: true,
+                message: "Order fetched successfully!",
+                data: result
+            })
+        } catch (err: any) {
+            res.status(404).json({
+                success: false,
+                message: err.message || "User not found",
+                error: err
+            })
+        }
+    } catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err.message || "something went wrong",
+            error: err
+        })
+    }
+}
+
+
 
 const updateUser = async (req: Request, res: Response) => {
     try {
 
 
-        
+
         const { userId } = req.params;
         const userData = req.body;
-        const { error,value } = userValidationSchema.validate(userData);
+        const { error, value } = userValidationSchema.validate(userData);
         if (error) {
             return res.status(500).json({
                 success: false,
@@ -143,10 +172,12 @@ const updateUserOrder = async (req: Request, res: Response) => {
     try {
 
 
+
+        const { userId } = req.params;
+        const userData = req.body;
+
         try {
 
-            const { userId } = req.params;
-            const userData = req.body;
             await userService.updateUserOrderInDb(userId, userData)
             res.status(200).json({
                 success: true,
@@ -213,6 +244,8 @@ export const userController = {
     updateUser,
     deleteUser,
     updateUserOrder,
+    getOrdersBySpecificUser,
+    
 
 
 

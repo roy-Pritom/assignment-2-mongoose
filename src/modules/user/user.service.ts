@@ -1,5 +1,6 @@
 import { TOrders, TUser } from "./user.interface";
 import { User } from "./user.model";
+import { orderValidationSchema } from "./user.validation";
 
 const createUserInToDb = async (user: TUser) => {
     const result = await User.create(user);
@@ -13,66 +14,46 @@ const getUsersFromDb = async () => {
 }
 
 const getSingleUserFromDb = async (id: string) => {
-    const existUser = await User.isUserExists(id);
-    if (!existUser) {
-        const error = new Error("User not found!");
-        throw {
-            code: 404,
-            description: error.message
-
-        };
-    }
+    await User.isUserExists(id);
     const result = await User.findOne({ userId: id }, { password: false });
     return result;
 }
 
+// Retrieve all orders for a specific user
+const getOrdersBySpecificUserFromDb = async (id:string) => {
+    // call static method
+     await User.isUserExists(id);
+     const result=await User.findOne({userId:id},{orders:1});
+     return result;
+}
+
+
 const updateUserInDb = async (id: string, user: TUser) => {
     // call static method
-    const existUser = await User.isUserExists(id);
-    if (!existUser) {
-        const error = new Error("User not found!");
-        throw {
-            code: 404,
-            description: error.message
-
-        };
-    }
+    await User.isUserExists(id);
     const result = await User.findOneAndUpdate({ userId: id }, user, { new: true, projection: { password: 0 } });
     return result;
 }
 
-const updateUserOrderInDb=async(id:string,newItem:TOrders)=>{
-      // call static method
-      const existUser = await User.isUserExists(id);
-      if (!existUser) {
-          const error = new Error("User not found!");
-          throw {
-              code: 404,
-              description: error.message
-  
-          };
-      }
-      const result=await User.findOneAndUpdate(
-        {userId:id},
-        { $push:{orders:newItem} }
-      )
+const updateUserOrderInDb = async (id: string, newItem: TOrders) => {
+    // call static method
+    await User.isUserExists(id);
+    const { error, value } = orderValidationSchema.validate(newItem);
+    if (error) {
+        throw new Error("orders item  must be TOrders type.")
+    }
+    const result = await User.findOneAndUpdate(
+        { userId: id },
+        { $push: { orders: value } }
+    )
 
-      return result;
+    return result;
 }
 
-const deleteUserFromDb=async(id:string)=>{
+const deleteUserFromDb = async (id: string) => {
     // call static method
-    const existUser = await User.isUserExists(id);
-    if (!existUser) {
-        const error = new Error("User not found!");
-        throw {
-            code: 404,
-            description: error.message
-
-        };
-    }
-
-    const result=await User.deleteOne({userId:id});
+    await User.isUserExists(id);
+    const result = await User.deleteOne({ userId: id });
     return result;
 }
 
@@ -83,6 +64,8 @@ export const userService = {
     updateUserInDb,
     deleteUserFromDb,
     updateUserOrderInDb,
+    getOrdersBySpecificUserFromDb,
+
 
 
 
