@@ -114,11 +114,46 @@ const updateUser = async (req: Request, res: Response) => {
     }
 }
 
+
+const deleteUser = async (req: Request, res: Response) => {
+    try {
+
+
+        try {
+
+            const { userId } = req.params;
+          
+            const result = await userService.deleteUserFromDb(userId);
+            res.status(200).json({
+                success: true,
+                message: "User deleted successfully!",
+                data: result
+            })
+        } catch (error: any) {
+            res.status(404).json({
+                success: false,
+                message: error.message || "User not found",
+                error: error
+            })
+        }
+
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err.message || "something went wrong",
+            error: err
+        })
+    }
+}
+
 export const userController = {
     createUser,
     getUsers,
     getSingleUser,
-    updateUser
+    updateUser,
+    deleteUser,
 
 
 }
