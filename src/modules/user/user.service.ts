@@ -7,7 +7,15 @@ const createUserInToDb=async(user:TUser)=>{
 }
 
 
+const getUsersFromDb=async()=>{
+    const result=await User.find().select('username fullName age email address');
+    return result;
+}
+
+
 export const userService={
     createUserInToDb,
+    getUsersFromDb,
     
+
 }
