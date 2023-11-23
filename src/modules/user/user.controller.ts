@@ -48,13 +48,25 @@ const getUsers = async (req: Request, res: Response) => {
 // Retrieve a specific user by ID
 const getSingleUser = async (req: Request, res: Response) => {
     try {
-        const {userId}=req.params;
-        const result = await userService.getSingleUserFromDb(userId);
-        res.status(200).json({
-            success: true,
-            message: "Users fetched successfully!",
-            data: result
-        })
+
+        try{
+
+            const {userId}=req.params;
+            const result = await userService.getSingleUserFromDb(userId);
+            res.status(200).json({
+                success: true,
+                message: "Users fetched successfully!",
+                data: result
+            })
+            // when error occuere i service
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        }catch(err:any){
+            res.status(404).json({
+                success: false,
+                message: err.message || "User not found",
+                error: err
+            })
+        }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
