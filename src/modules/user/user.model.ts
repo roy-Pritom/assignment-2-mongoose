@@ -70,8 +70,8 @@ const userSchema = new Schema<TUser,UserModel>({
     },
     orders: {
         type: [ordersSchema],
-        default: [],
-    },
+        
+        },
 });
 
 
