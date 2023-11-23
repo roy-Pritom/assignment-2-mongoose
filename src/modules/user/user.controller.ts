@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import { userService } from "./user.service";
 
@@ -49,9 +50,9 @@ const getUsers = async (req: Request, res: Response) => {
 const getSingleUser = async (req: Request, res: Response) => {
     try {
 
-        try{
+        try {
 
-            const {userId}=req.params;
+            const { userId } = req.params;
             const result = await userService.getSingleUserFromDb(userId);
             res.status(200).json({
                 success: true,
@@ -59,8 +60,8 @@ const getSingleUser = async (req: Request, res: Response) => {
                 data: result
             })
             // when error occuere i service
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        }catch(err:any){
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
             res.status(404).json({
                 success: false,
                 message: err.message || "User not found",
@@ -79,10 +80,45 @@ const getSingleUser = async (req: Request, res: Response) => {
 }
 
 
+
+const updateUser = async (req: Request, res: Response) => {
+    try {
+
+
+        try {
+
+            const { userId } = req.params;
+            const userData = req.body;
+            const result = await userService.updateUserInDb(userId, userData)
+            res.status(200).json({
+                success: true,
+                message: "User updated successfully!",
+                data: result
+            })
+        } catch (error: any) {
+            res.status(404).json({
+                success: false,
+                message: error.message || "User not found",
+                error: error
+            })
+        }
+
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err.message || "something went wrong",
+            error: err
+        })
+    }
+}
+
 export const userController = {
     createUser,
     getUsers,
     getSingleUser,
+    updateUser
 
 
 }

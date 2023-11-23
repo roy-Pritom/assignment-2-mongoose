@@ -26,10 +26,27 @@ const getSingleUserFromDb = async (id: string) => {
     return result;
 }
 
+const updateUserInDb = async (id: string, user: TUser) => {
+    // call static method
+    const existUser = await User.isUserExists(id);
+    if (!existUser) {
+        const error = new Error("User not found!");
+        throw {
+            code: 404,
+            description: error.message
+
+        };
+    }
+    const result = await User.findOneAndUpdate({ userId: id }, user, { new: true, projection: { password: 0 } });
+    return result;
+}
+
 export const userService = {
     createUserInToDb,
     getUsersFromDb,
     getSingleUserFromDb,
+    updateUserInDb,
+
 
 
 

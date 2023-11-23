@@ -10,7 +10,7 @@ app.use(cors());
 
 
 // call userRoutes
-app.use('/api',userRoutes)
+app.use('/',userRoutes)
 
 
 app.get('/',(req:Request,res:Response)=>{

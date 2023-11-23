@@ -6,9 +6,10 @@ const router=express.Router();
 
 
 // router
-router.post('/users',userController.createUser)
-router.get('/users',userController.getUsers)
-router.get('/users/:userId',userController.getSingleUser)
+router.post('/api/users',userController.createUser)
+router.get('/api/users',userController.getUsers)
+router.get('/api/users/:userId',userController.getSingleUser)
+router.put('/api/users/:userId',userController.updateUser)
 
 
 export const userRoutes=router;
