@@ -68,11 +68,11 @@ const getUsers = async (req: Request, res: Response) => {
 // Retrieve a specific user by ID
 const getSingleUser = async (req: Request, res: Response) => {
     try {
-
+        const id =Number(req.params.userId);
         try {
 
-            const { userId } = req.params;
-            const result = await userService.getSingleUserFromDb(userId);
+        
+            const result = await userService.getSingleUserFromDb(id);
             res.status(200).json({
                 success: true,
                 message: "Users fetched successfully!",
@@ -102,12 +102,40 @@ const getSingleUser = async (req: Request, res: Response) => {
 //  Retrieve all orders for a specific user
 const getOrdersBySpecificUser = async (req: Request, res: Response) => {
     try {
-        const { userId } = req.params;
+        const id =Number(req.params.userId);
         try {
-            const result = await userService.getOrdersBySpecificUserFromDb(userId);
+            const result = await userService.getOrdersBySpecificUserFromDb(id);
             res.status(200).json({
                 success: true,
                 message: "Order fetched successfully!",
+                data: result
+            })
+        } catch (err: any) {
+            res.status(404).json({
+                success: false,
+                message: err.message || "User not found",
+                error: err
+            })
+        }
+    } catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err.message || "something went wrong",
+            error: err
+        })
+    }
+}
+
+// Calculate Total Price of Orders for a Specific User
+const getTotalPriceOfOrderBySpecificUser = async (req: Request, res: Response) => {
+    try {
+        const id = Number(req.params.userId);
+
+        try {
+            const result = await userService.getTotalPriceOfOrderBySpecificUserFromDb(id);
+            res.status(200).json({
+                success: true,
+                message: "Total price calculated successfully!",
                 data: result
             })
         } catch (err: any) {
@@ -133,7 +161,7 @@ const updateUser = async (req: Request, res: Response) => {
 
 
 
-        const { userId } = req.params;
+        const id = Number(req.params.userId);
         const userData = req.body;
         const { error, value } = userValidationSchema.validate(userData);
         if (error) {
@@ -144,7 +172,7 @@ const updateUser = async (req: Request, res: Response) => {
             });
         }
         try {
-            const result = await userService.updateUserInDb(userId, value)
+            const result = await userService.updateUserInDb(id, value)
             res.status(200).json({
                 success: true,
                 message: "User updated successfully!",
@@ -173,12 +201,12 @@ const updateUserOrder = async (req: Request, res: Response) => {
 
 
 
-        const { userId } = req.params;
+        const id =Number(req.params.userId) ;
         const userData = req.body;
 
         try {
 
-            await userService.updateUserOrderInDb(userId, userData)
+            await userService.updateUserOrderInDb(id, userData)
             res.status(200).json({
                 success: true,
                 message: "Order created successfully!",
@@ -207,12 +235,11 @@ const updateUserOrder = async (req: Request, res: Response) => {
 const deleteUser = async (req: Request, res: Response) => {
     try {
 
-
+        const id =Number(req.params.userId) ;
         try {
 
-            const { userId } = req.params;
 
-            const result = await userService.deleteUserFromDb(userId);
+            const result = await userService.deleteUserFromDb(id);
             res.status(200).json({
                 success: true,
                 message: "User deleted successfully!",
@@ -245,7 +272,8 @@ export const userController = {
     deleteUser,
     updateUserOrder,
     getOrdersBySpecificUser,
-    
+    getTotalPriceOfOrderBySpecificUser
+
 
 
 

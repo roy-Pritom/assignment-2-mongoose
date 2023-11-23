@@ -75,7 +75,7 @@ const userSchema = new Schema<TUser,UserModel>({
 });
 
 
-userSchema.statics.isUserExists=async function(id:string){
+userSchema.statics.isUserExists=async function(id:number){
     const existUser=await User.findOne({userId:id})
     if (!existUser) {
         const error = new Error("User not found!");

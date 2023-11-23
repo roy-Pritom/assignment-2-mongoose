@@ -13,29 +13,43 @@ const getUsersFromDb = async () => {
     return result;
 }
 
-const getSingleUserFromDb = async (id: string) => {
+const getSingleUserFromDb = async (id:number) => {
     await User.isUserExists(id);
     const result = await User.findOne({ userId: id }, { password: false });
     return result;
 }
 
 // Retrieve all orders for a specific user
-const getOrdersBySpecificUserFromDb = async (id:string) => {
+const getOrdersBySpecificUserFromDb = async (id:number) => {
     // call static method
      await User.isUserExists(id);
      const result=await User.findOne({userId:id},{orders:1});
      return result;
 }
+// Calculate Total Price of Orders for a Specific User
+const getTotalPriceOfOrderBySpecificUserFromDb = async (id:number) => {
+    // call static method
+     await User.isUserExists(id);
+     const result=await User.aggregate([
+        // stage 1
+        { $match:{userId:id} },
+        // stage 2
+        { $unwind:"$orders" },
+        //stage 3
+        { $group:{_id:"$userId",totalPrice:{$sum:"$orders.price"}} }
+     ]);
 
+     return result;
+}
 
-const updateUserInDb = async (id: string, user: TUser) => {
+const updateUserInDb = async (id:number, user: TUser) => {
     // call static method
     await User.isUserExists(id);
     const result = await User.findOneAndUpdate({ userId: id }, user, { new: true, projection: { password: 0 } });
     return result;
 }
 
-const updateUserOrderInDb = async (id: string, newItem: TOrders) => {
+const updateUserOrderInDb = async (id: number, newItem: TOrders) => {
     // call static method
     await User.isUserExists(id);
     const { error, value } = orderValidationSchema.validate(newItem);
@@ -50,7 +64,7 @@ const updateUserOrderInDb = async (id: string, newItem: TOrders) => {
     return result;
 }
 
-const deleteUserFromDb = async (id: string) => {
+const deleteUserFromDb = async (id: number) => {
     // call static method
     await User.isUserExists(id);
     const result = await User.deleteOne({ userId: id });
@@ -65,6 +79,7 @@ export const userService = {
     deleteUserFromDb,
     updateUserOrderInDb,
     getOrdersBySpecificUserFromDb,
+    getTotalPriceOfOrderBySpecificUserFromDb,
 
 
 
