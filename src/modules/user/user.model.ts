@@ -1,15 +1,32 @@
 import { Schema, model } from "mongoose";
-import { TOrders, TUser,TUserAddress,TUserName, UserModel} from "./user.interface";
+import { TOrders, TUser, TUserAddress, TUserName, UserModel } from "./user.interface";
+import bcrypt from 'bcrypt';
+import config from "../../app/config";
 
 const userNameSchema = new Schema<TUserName>({
-    firstName: { type: String, required: [true, 'First name is required'] },
-    lastName: { type: String, required: [true, 'Last name is required'] }
+    firstName: {
+        type: String,
+        required: [true, 'First name is required']
+    },
+    lastName: {
+        type: String,
+        required: [true, 'Last name is required']
+    }
 });
 
 const userAddressSchema = new Schema<TUserAddress>({
-    street: { type: String, required: [true, 'Street is required'] },
-    city: { type: String, required: [true, 'City is required'] },
-    country: { type: String, required: [true, 'Country is required'] }
+    street: {
+        type: String,
+        required: [true, 'Street is required']
+    },
+    city: {
+        type: String,
+        required: [true, 'City is required']
+    },
+    country: {
+        type: String,
+        required: [true, 'Country is required']
+    }
 });
 
 
@@ -28,10 +45,10 @@ const ordersSchema = new Schema<TOrders>({
     },
 });
 
-const userSchema = new Schema<TUser,UserModel>({
+const userSchema = new Schema<TUser, UserModel>({
     userId: {
         type: Number,
-        unique:true,
+        unique: true,
         required: [true, 'User ID is required'],
     },
     username: {
@@ -70,13 +87,13 @@ const userSchema = new Schema<TUser,UserModel>({
     },
     orders: {
         type: [ordersSchema],
-        
-        },
+
+    },
 });
 
-
-userSchema.statics.isUserExists=async function(id:number){
-    const existUser=await User.findOne({userId:id})
+// static method
+userSchema.statics.isUserExists = async function (id: number) {
+    const existUser = await User.findOne({ userId: id })
     if (!existUser) {
         const error = new Error("User not found!");
         throw {
@@ -86,7 +103,20 @@ userSchema.statics.isUserExists=async function(id:number){
         };
     }
     return existUser;
-  }
+}
+
+// pre save middleware
+userSchema.pre('save', async function (next) {
+    // hashing password
+    this.password = await bcrypt.hash(this.password, Number(config.bcrypt_salt_rounds));
+    next();
+})
+
+// post save middleware
+userSchema.post('save', function (doc, next) {
+    doc.password ='';
+    next();
+})
 
 
-export const User=model<TUser,UserModel>('Users',userSchema);
+export const User = model<TUser, UserModel>('Users', userSchema);
