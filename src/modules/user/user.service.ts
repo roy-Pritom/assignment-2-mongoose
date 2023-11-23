@@ -12,10 +12,16 @@ const getUsersFromDb=async()=>{
     return result;
 }
 
+const getSingleUserFromDb=async(id:string)=>{
+   const result=await User.findOne({userId:id},{password:false});
+   return result;
+}
 
 export const userService={
     createUserInToDb,
     getUsersFromDb,
+    getSingleUserFromDb,
+
     
 
 }

@@ -26,16 +26,37 @@ const createUser = async (req: Request, res: Response) => {
 
 
 
-const getUsers = async(req: Request, res: Response) => {
+const getUsers = async (req: Request, res: Response) => {
     try {
-        const result=await userService.getUsersFromDb();
+        const result = await userService.getUsersFromDb();
         res.status(200).json({
             success: true,
             message: "Users fetched successfully!",
             data: result
         })
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err.message || "something went wrong",
+            error: err
+        })
+    }
+}
+
+// Retrieve a specific user by ID
+const getSingleUser = async (req: Request, res: Response) => {
+    try {
+        const {userId}=req.params;
+        const result = await userService.getSingleUserFromDb(userId);
+        res.status(200).json({
+            success: true,
+            message: "Users fetched successfully!",
+            data: result
+        })
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
         res.status(500).json({
             success: false,
@@ -49,5 +70,7 @@ const getUsers = async(req: Request, res: Response) => {
 export const userController = {
     createUser,
     getUsers,
+    getSingleUser,
+
 
 }
