@@ -14,7 +14,10 @@ app.use('/',userRoutes)
 
 
 app.get('/',(req:Request,res:Response)=>{
-    res.send("Hello user!");
+    res.json({
+        success:true,
+        message:"Welcome to the API"
+    })
 })
 
 

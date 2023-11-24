@@ -131,8 +131,8 @@ const getTotalPriceOfOrderBySpecificUser = async (req: Request, res: Response) =
             const result = await userService.getTotalPriceOfOrderBySpecificUserFromDb(id);
             res.status(200).json({
                 success: true,
-                message: "Total price calculated successfully!",
-                data: result
+                message:result.length===0?"Orders array is empty":"Total price calculated successfully!",
+                data: result.length===0?"totalPrice=0":result
             })
         } catch (err: any) {
             res.status(404).json({
