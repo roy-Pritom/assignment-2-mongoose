@@ -32,4 +32,4 @@ const userValidationSchema = Joi.object({
     orders: Joi.array().items(orderValidationSchema).min(1),
 });
 
-export  { userValidationSchema,orderValidationSchema};
+export { userValidationSchema, orderValidationSchema };

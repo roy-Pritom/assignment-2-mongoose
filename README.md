@@ -8,8 +8,8 @@ Before you run locally, ensure that you must have the following requirements:
 
 - Node.js installed
 - npm package manager installed
-- typescript installed
 - MongoDB installed and running locally
+- typescript installed
 
 ## Getting Started
 
@@ -40,6 +40,10 @@ Before you run locally, ensure that you must have the following requirements:
 
    ```bash
    npm run start:dev
+6. **See code problems(eslint):**
+
+   ```bash
+   npm run lint
    
 
 
